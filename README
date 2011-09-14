@@ -1,6 +1,12 @@
+// получить новое
+git pull 					
+
+// добавить в рассмотрение
 git add
+// комит
 git commit -m 'sample'
+// отослать на сервер
 git push -u origin master
 
-
+// законнектить ориджин и 
 git remote add origin git@github.com:AlexFed/MachGraph.git
