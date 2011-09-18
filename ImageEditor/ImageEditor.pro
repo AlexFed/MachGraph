@@ -11,8 +11,10 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        imageeditor.cpp
+        imageeditor.cpp \
+    mimage.cpp
 
-HEADERS  += imageeditor.h
+HEADERS  += imageeditor.h \
+    mimage.h
 
 FORMS    += imageeditor.ui

@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QPrinter>
+#include "mimage.h"
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -23,12 +24,24 @@ public:
 private slots:
     void open();
     void print();
+    void test();
+
     void zoomIn();
     void zoomOut();
     void normalSize();
     void fitToWindow();
+
     void about();
-    void test();
+
+    void lineExt();
+    void channelExt();
+    void gauss();
+    void sharpening();
+    void grayWorld();
+    void median();
+    void sepGauss();
+    void waves();
+    void glass();
 
 private:
     void createActions();
@@ -40,6 +53,8 @@ private:
     QLabel *imageLabel;
     QScrollArea *scrollArea;
     double scaleFactor;
+    MImage *curImg;
+    int minX, minY, maxX, maxY;
 
 #ifndef QT_NO_PRINTER
     QPrinter printer;
@@ -48,16 +63,29 @@ private:
     QAction *openAct;
     QAction *printAct;
     QAction *exitAct;
+    QAction *testAct;
+
     QAction *zoomInAct;
     QAction *zoomOutAct;
     QAction *normalSizeAct;
     QAction *fitToWindowAct;
+
     QAction *aboutAct;
     QAction *aboutQtAct;
-    QAction *testAct;
+
+    QAction *lineExtAct;
+    QAction *channelExtAct;
+    QAction *gaussAct;
+    QAction *sharpeningAct;
+    QAction *grayWorldAct;
+    QAction *medianAct;
+    QAction *sepGaussAct;
+    QAction *wavesAct;
+    QAction *glassAct;
 
     QMenu *fileMenu;
     QMenu *viewMenu;
+    QMenu *effectsMenu;
     QMenu *helpMenu;
 };
 //! [0]

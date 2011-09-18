@@ -4,6 +4,9 @@
 
 ImageEditor::ImageEditor()
 {
+    curImg = NULL;
+    minX = minY = maxX = maxY = 0;
+
     imageLabel = new QLabel;
     imageLabel->setVisible(false);
     imageLabel->setBackgroundRole(QPalette::Base);
@@ -29,16 +32,25 @@ void ImageEditor::open()
     if (!fileName.isEmpty()) {
         QImage image(fileName);
         if (image.isNull()) {
-            QMessageBox::information(this, tr("Image Viewer"),
+            QMessageBox::information(this, tr("Image Editor"),
                                      tr("Cannot load %1.").arg(fileName));
             return;
         }
-        imageLabel->setPixmap(QPixmap::fromImage(image));
+        if(curImg)
+            curImg->~MImage();
+        curImg = new MImage(image);
+
+//        !!!
+        minX = minY= 0;
+        maxX = image.width();
+        maxY = image.height();
+        imageLabel->setPixmap(QPixmap::fromImage(curImg->getImage()));
         scaleFactor = 1.0;
 
-        printAct->setEnabled(true);
+        effectsMenu->setEnabled(true);
         fitToWindowAct->setEnabled(true);
         updateActions();
+        lineExtAct->setEnabled(true);
 
         if (!fitToWindowAct->isChecked())
             imageLabel->adjustSize();
@@ -97,8 +109,8 @@ void ImageEditor::fitToWindow()
 
 void ImageEditor::about()
 {
-    QMessageBox::about(this, tr("About Image Viewer"),
-            tr("<p>The <b>Image Viewer</b> example shows how to combine QLabel "
+    QMessageBox::about(this, tr("About Image Editor"),
+            tr("<p>The <b>Image Editor</b> example shows how to combine QLabel "
                "and QScrollArea to display an image. QLabel is typically used "
                "for displaying a text, but it can also display an image. "
                "QScrollArea provides a scrolling view around another widget. "
@@ -123,13 +135,13 @@ void ImageEditor::createActions()
     printAct->setEnabled(false);
     connect(printAct, SIGNAL(triggered()), this, SLOT(print()));
 
-    testAct = new QAction(tr("&Test"), this);
-    testAct->setShortcut(tr("Ctrl+T"));
-    connect(testAct, SIGNAL(triggered()), this, SLOT(test()));
-
     exitAct = new QAction(tr("E&xit"), this);
     exitAct->setShortcut(tr("Ctrl+Q"));
     connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));
+
+    testAct = new QAction(tr("&Test"), this);
+    testAct->setShortcut(tr("Ctrl+T"));
+    connect(testAct, SIGNAL(triggered()), this, SLOT(test()));
 
     zoomInAct = new QAction(tr("Zoom &In (25%)"), this);
     zoomInAct->setShortcut(tr("Ctrl++"));
@@ -151,6 +163,33 @@ void ImageEditor::createActions()
     fitToWindowAct->setCheckable(true);
     fitToWindowAct->setShortcut(tr("Ctrl+F"));
     connect(fitToWindowAct, SIGNAL(triggered()), this, SLOT(fitToWindow()));
+
+    lineExtAct = new QAction(tr("Линейное растяжение гистограммы яркости"), this);
+    connect(lineExtAct, SIGNAL(triggered()), this, SLOT(lineExt()));
+
+    channelExtAct = new QAction(tr("Поканальное растяжение гистограммы"), this);
+    connect(channelExtAct, SIGNAL(triggered()), this, SLOT(chanelExt()));
+
+    gaussAct = new QAction(tr("Фильтр Гаусса"), this);
+    connect(gaussAct, SIGNAL(triggered()), this, SLOT(gauss()));
+
+    sharpeningAct = new QAction(tr("Повышение резкости"), this);
+    connect(sharpeningAct, SIGNAL(triggered()), this, SLOT(sharpening()));
+
+    grayWorldAct = new QAction(tr("Серый Мир"), this);
+    connect(grayWorldAct, SIGNAL(triggered()), this, SLOT(grayWorld()));
+
+    medianAct = new QAction(tr("Медианная фильтрация"), this);
+    connect(medianAct, SIGNAL(triggered()), this, SLOT(median()));
+
+    sepGaussAct = new QAction(tr("Сепарабельный фильтр Гаусса"), this);
+    connect(sepGaussAct, SIGNAL(triggered()), this, SLOT(sepGauss()));
+
+    wavesAct = new QAction(tr("Волны"), this);
+    connect(wavesAct, SIGNAL(triggered()), this, SLOT(waves()));
+
+    glassAct = new QAction(tr("Стекло"), this);
+    connect(glassAct, SIGNAL(triggered()), this, SLOT(glass()));
 
     aboutAct = new QAction(tr("&About"), this);
     connect(aboutAct, SIGNAL(triggered()), this, SLOT(about()));
@@ -176,12 +215,28 @@ void ImageEditor::createMenus()
     viewMenu->addSeparator();
     viewMenu->addAction(fitToWindowAct);
 
+    effectsMenu = new QMenu(tr("&Effects"), this);
+    effectsMenu->addAction(lineExtAct);
+    effectsMenu->addAction(channelExtAct);
+    effectsMenu->addSeparator();
+    effectsMenu->addAction(gaussAct);
+    effectsMenu->addAction(sharpeningAct);
+    effectsMenu->addAction(sepGaussAct);
+    effectsMenu->addSeparator();
+    effectsMenu->addAction(grayWorldAct);
+    effectsMenu->addAction(medianAct);
+    effectsMenu->addSeparator();
+    effectsMenu->addAction(wavesAct);
+    effectsMenu->addAction(glassAct);
+    effectsMenu->setEnabled(false);
+
     helpMenu = new QMenu(tr("&Help"), this);
     helpMenu->addAction(aboutAct);
     helpMenu->addAction(aboutQtAct);
 
     menuBar()->addMenu(fileMenu);
     menuBar()->addMenu(viewMenu);
+    menuBar()->addMenu(effectsMenu);
     menuBar()->addMenu(helpMenu);
 }
 
@@ -198,8 +253,8 @@ void ImageEditor::scaleImage(double factor)
     scaleFactor *= factor;
     imageLabel->resize(scaleFactor * imageLabel->pixmap()->size());
 
-    //adjustScrollBar(scrollArea->horizontalScrollBar(), factor);
-    //adjustScrollBar(scrollArea->verticalScrollBar(), factor);
+    adjustScrollBar(scrollArea->horizontalScrollBar(), factor);
+    adjustScrollBar(scrollArea->verticalScrollBar(), factor);
 
     zoomInAct->setEnabled(scaleFactor < 3.0);
     zoomOutAct->setEnabled(scaleFactor > 0.333);
@@ -209,4 +264,60 @@ void ImageEditor::adjustScrollBar(QScrollBar *scrollBar, double factor)
 {
     scrollBar->setValue(int(factor * scrollBar->value()
                             + ((factor - 1) * scrollBar->pageStep()/2)));
+}
+
+///
+
+void ImageEditor::lineExt()
+{
+    curImg->lineExt(minX, minY, maxX, maxY);
+    imageLabel->setPixmap(QPixmap::fromImage(curImg->getImage()));
+}
+
+void ImageEditor::channelExt()
+{
+    curImg->channelExt(minX, minY, maxX, maxY);
+    imageLabel->setPixmap(QPixmap::fromImage(curImg->getImage()));
+}
+
+void ImageEditor::gauss()
+{
+    curImg->gauss(minX, minY, maxX, maxY);
+    imageLabel->setPixmap(QPixmap::fromImage(curImg->getImage()));
+}
+
+void ImageEditor::sharpening()
+{
+    curImg->sharpening(minX, minY, maxX, maxY);
+    imageLabel->setPixmap(QPixmap::fromImage(curImg->getImage()));
+}
+
+void ImageEditor::grayWorld()
+{
+    curImg->grayWorld(minX, minY, maxX, maxY);
+    imageLabel->setPixmap(QPixmap::fromImage(curImg->getImage()));
+}
+
+void ImageEditor::median()
+{
+    curImg->median(minX, minY, maxX, maxY);
+    imageLabel->setPixmap(QPixmap::fromImage(curImg->getImage()));
+}
+
+void ImageEditor::sepGauss()
+{
+    curImg->sepGauss(minX, minY, maxX, maxY);
+    imageLabel->setPixmap(QPixmap::fromImage(curImg->getImage()));
+}
+
+void ImageEditor::waves()
+{
+    curImg->waves(minX, minY, maxX, maxY);
+    imageLabel->setPixmap(QPixmap::fromImage(curImg->getImage()));
+}
+
+void ImageEditor::glass()
+{
+    curImg->glass(minX, minY, maxX, maxY);
+    imageLabel->setPixmap(QPixmap::fromImage(curImg->getImage()));
 }
