@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'imageeditor.h'
 **
-** Created: Sat Sep 17 15:18:50 2011
+** Created: Sun Sep 18 03:55:27 2011
 **      by: The Qt Meta Object Compiler version 62 (Qt 4.7.0)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -23,7 +23,7 @@ static const uint qt_meta_data_ImageEditor[] = {
        5,       // revision
        0,       // classname
        0,    0, // classinfo
-       8,   14, // methods
+      17,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -34,19 +34,31 @@ static const uint qt_meta_data_ImageEditor[] = {
       13,   12,   12,   12, 0x08,
       20,   12,   12,   12, 0x08,
       28,   12,   12,   12, 0x08,
-      37,   12,   12,   12, 0x08,
-      47,   12,   12,   12, 0x08,
-      60,   12,   12,   12, 0x08,
-      74,   12,   12,   12, 0x08,
-      82,   12,   12,   12, 0x08,
+      35,   12,   12,   12, 0x08,
+      44,   12,   12,   12, 0x08,
+      54,   12,   12,   12, 0x08,
+      67,   12,   12,   12, 0x08,
+      81,   12,   12,   12, 0x08,
+      89,   12,   12,   12, 0x08,
+      99,   12,   12,   12, 0x08,
+     112,   12,   12,   12, 0x08,
+     120,   12,   12,   12, 0x08,
+     133,   12,   12,   12, 0x08,
+     145,   12,   12,   12, 0x08,
+     154,   12,   12,   12, 0x08,
+     165,   12,   12,   12, 0x08,
+     173,   12,   12,   12, 0x08,
 
        0        // eod
 };
 
 static const char qt_meta_stringdata_ImageEditor[] = {
-    "ImageEditor\0\0open()\0print()\0zoomIn()\0"
-    "zoomOut()\0normalSize()\0fitToWindow()\0"
-    "about()\0test()\0"
+    "ImageEditor\0\0open()\0print()\0test()\0"
+    "zoomIn()\0zoomOut()\0normalSize()\0"
+    "fitToWindow()\0about()\0lineExt()\0"
+    "channelExt()\0gauss()\0sharpening()\0"
+    "grayWorld()\0median()\0sepGauss()\0waves()\0"
+    "glass()\0"
 };
 
 const QMetaObject ImageEditor::staticMetaObject = {
@@ -80,15 +92,24 @@ int ImageEditor::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
         switch (_id) {
         case 0: open(); break;
         case 1: print(); break;
-        case 2: zoomIn(); break;
-        case 3: zoomOut(); break;
-        case 4: normalSize(); break;
-        case 5: fitToWindow(); break;
-        case 6: about(); break;
-        case 7: test(); break;
+        case 2: test(); break;
+        case 3: zoomIn(); break;
+        case 4: zoomOut(); break;
+        case 5: normalSize(); break;
+        case 6: fitToWindow(); break;
+        case 7: about(); break;
+        case 8: lineExt(); break;
+        case 9: channelExt(); break;
+        case 10: gauss(); break;
+        case 11: sharpening(); break;
+        case 12: grayWorld(); break;
+        case 13: median(); break;
+        case 14: sepGauss(); break;
+        case 15: waves(); break;
+        case 16: glass(); break;
         default: ;
         }
-        _id -= 8;
+        _id -= 17;
     }
     return _id;
 }

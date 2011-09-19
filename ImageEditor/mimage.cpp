@@ -5,6 +5,7 @@ MImage::MImage(QImage i)
     width = i.width();
     height = i.height();
     img = new QImage(i);
+    img->convertToFormat(QImage::Format_RGB32);
 }
 
 QImage MImage::getImage()
@@ -20,9 +21,20 @@ MImage::~MImage()
 /** Линейное растяжение гистограммы яркости */
 void MImage::lineExt(int minX, int minY, int maxX, int maxY)
 {
-    for(int i = minX; i < maxX; i+=10)
-        for(int j = minY; j < maxY; ++j)
-            img->setPixel(i, j, 0);
+    unsigned char **map = NULL;
+
+    map = new unsigned char*[maxY - minY];
+    for(int i = minY; i < maxY; ++i)
+        map[i] = img->scanLine(i);
+
+
+    for(int i = minY; i < maxY; i+=10)
+        for(int j = minX; j < maxX; ++j)
+            map[i][j] = 0;
+//    for(int i = minX; i < maxX; i+=10)
+//        for(int j = minY; j < maxY; ++j)
+//            img->setPixel(i, j, 0);
+
 }
 
 /** Поканальное растяжение гистограммы */
